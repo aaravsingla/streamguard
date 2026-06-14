@@ -24,21 +24,6 @@ Article explaining how to run this project: [medium](https://towardsdatascience.
 *Built and maintained by [Aarav Singla](https://github.com/aaravsingla)*
 
 
-# Demo
-Generate fake transactions into a kafka topic:
-![Transactions](./docs/transactions_producer.gif)
-
-Predict and send anomalies to another kafka topic
-![Anomalies](./docs/anomalies.gif)
-
-Producer and anomaly detection running at the same time
-
-![Concurrent](./docs/concurrent.gif)
-
-
-Send notifications to Slack
-![Slack](./docs/slack_alerts.gif)
-
 # Usage:
 
 * First train the anomaly detection model, run the file:
