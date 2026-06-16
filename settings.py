@@ -19,3 +19,6 @@ ANOMALIES_CONSUMER_GROUP = "anomalies"
 
 SLACK_API_TOKEN = os.environ.get("SLACK_API_TOKEN")
 SLACK_CHANNEL = "anomalies-alerts"
+
+# Endpoint of the FastAPI alerting service (see streaming/alert_service.py).
+ALERT_SERVICE_URL = os.environ.get("ALERT_SERVICE_URL", "http://localhost:8001/alert")

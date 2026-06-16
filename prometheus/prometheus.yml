@@ -1,0 +1,17 @@
+# Prometheus scrape configuration for StreamGuard.
+
+global:
+  # Pull metrics every 5 seconds. Anomaly/drift signals are time-sensitive, so
+  # a tight interval keeps the Grafana panels close to real time.
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: "streamguard-consumer"
+    static_configs:
+      # The consumer's prometheus_client server runs on the HOST machine
+      # (port 8000), not inside a container. From within the Prometheus
+      # container "localhost" is the container itself, so we reach the host
+      # via "host.docker.internal". docker-compose maps that name to the host
+      # gateway (see extra_hosts) so this works on Linux as well as Mac/Windows.
+      - targets: ["host.docker.internal:8000"]

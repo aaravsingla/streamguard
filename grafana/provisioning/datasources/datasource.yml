@@ -1,0 +1,14 @@
+# Auto-provision Prometheus as Grafana's default datasource on startup so no
+# manual UI clicking is needed. The fixed uid lets the bundled dashboard
+# reference this datasource reliably.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: streamguard-prometheus
+    access: proxy
+    # "prometheus" is the compose service name, resolvable on the shared network.
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true

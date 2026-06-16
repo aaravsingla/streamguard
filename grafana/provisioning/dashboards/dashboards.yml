@@ -1,0 +1,14 @@
+# Tell Grafana to load any dashboard JSON found in /var/lib/grafana/dashboards
+# (mounted from grafana/dashboards via docker-compose). This auto-imports the
+# StreamGuard dashboard on first boot.
+apiVersion: 1
+
+providers:
+  - name: "StreamGuard"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,15 @@
+# Minimal image for the FastAPI alerting service.
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Only the deps the alert service actually needs (pydantic resolves via fastapi).
+RUN pip install --no-cache-dir fastapi==0.103.2 uvicorn==0.23.2
+
+# Ship just the service code (it has no dependency on the rest of the project).
+COPY streaming/alert_service.py ./streaming/alert_service.py
+
+EXPOSE 8001
+
+# Serve the FastAPI app. Alerts are written to /app/logs/alerts.csv (mounted).
+CMD ["uvicorn", "streaming.alert_service:app", "--host", "0.0.0.0", "--port", "8001"]

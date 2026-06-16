@@ -1,0 +1,160 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Anomaly Rate Over Time",
+      "description": "Per-second rate of anomalies flagged by the Isolation Forest (1m window). Spikes can mean a real attack/fault or a misbehaving model.",
+      "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "ops",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 15,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+          "expr": "rate(anomalies_detected_total[1m])",
+          "legendFormat": "anomalies/sec"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Consumer Lag (events processed vs anomalies ratio)",
+      "description": "Event throughput alongside the fraction of events that are anomalies. A flat events line means the consumer has stalled; a rising ratio means the stream is getting noisier.",
+      "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "fillOpacity": 10,
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "anomaly ratio" },
+            "properties": [
+              { "id": "unit", "value": "percentunit" },
+              { "id": "custom.axisPlacement", "value": "right" }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "events/sec" },
+            "properties": [{ "id": "unit", "value": "ops" }]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+          "expr": "rate(events_processed_total[1m])",
+          "legendFormat": "events/sec"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+          "expr": "rate(anomalies_detected_total[1m]) / clamp_min(rate(events_processed_total[1m]), 0.0001)",
+          "legendFormat": "anomaly ratio"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "gauge",
+      "title": "PSI Value Per Feature",
+      "description": "Current Population Stability Index per feature. PSI < 0.1 = stable, 0.1-0.25 = moderate drift, > 0.25 = major drift. Thresholds are color-coded.",
+      "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 9 },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 0.5,
+          "unit": "short",
+          "decimals": 3,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 0.1 },
+              { "color": "red", "value": 0.25 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "streamguard-prometheus" },
+          "expr": "psi_value",
+          "legendFormat": "{{feature_name}}"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": ["streamguard", "anomaly-detection", "drift"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "StreamGuard — Anomaly Detection & Drift",
+  "uid": "streamguard-main",
+  "version": 1,
+  "weekStart": ""
+}
